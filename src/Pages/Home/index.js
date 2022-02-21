@@ -78,51 +78,65 @@ export default function Home() {
         })
     }
 
+    const displayResults = () => {
+        if (translatedText != "" && augmentedText != "") {
+            return (
+                <Form className="bg-light p-4">
+                    <FormGroup>
+                        <Table hover>
+                            <th>Results</th>
+                            <tbody>
+                                {augmentedText.map(item => {
+                                    return (
+                                        <tr><td>{item}</td></tr>
+                                    )
+                                })}
+                            </tbody>
+                        </Table>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Table hover>
+                            <th>Translations</th>
+                            <tbody>
+                                {translatedText.map(item => {
+                                    return (
+                                        <tr><td>{item}</td></tr>
+                                    )
+                                })}
+                            </tbody>
+                        </Table>
+                    </FormGroup>
+                </Form>
+            )
+        }
+    }
+
     return (
-        <Col md="10">
-            <Form className="bg-light p-4" onSubmit={handleSubmit}>
-                <FormGroup>
-                    <Label for="translateText">Text to Translate</Label>
-                    <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
-                </FormGroup>
-                <FormGroup>
-                    <Label for="sourceLanguage">Source Language</Label>
-                    <Select name="sourceLanguage" id="sourceLanguage" placeholder="sourceLanguage" options={languages} oonChange={value => setData({ ...data, sourceLanguage: value.target.value })}></Select>
-                </FormGroup>
-                <FormGroup>
-                    <Label for="targetLanguages">Target Languages</Label>
-                    <Select name="targetLanguages" id="targetLanguages" placeholder="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
-                </FormGroup>
-                <FormGroup>
-                    <Button>Translate</Button>
-                </FormGroup>
+        <>
+            <Col md="10">
+                <Form className="bg-light p-4" onSubmit={handleSubmit}>
+                    <FormGroup>
+                        <Label for="sourceLanguage">Source Language</Label>
+                        <Select name="sourceLanguage" id="sourceLanguage" options={languages} onChange={(value) => setData({ ...data, sourceLanguage: value.value })}></Select>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="targetLanguages">Target Languages</Label>
+                        <Select name="targetLanguages" id="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="translateText">Text to Translate</Label>
+                        <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Button>Translate</Button>
+                    </FormGroup>
+                </Form>
 
-            </Form>
+                {displayResults()}
+            </Col>
 
-            <Form className="bg-light p-4">
-                <FormGroup>
-                    <Table striped>
-                        <th>Results</th>
-                        {augmentedText.map(item => {
-                            return (
-                                <tr>{item}</tr>
-                            )
-                        })}
-                    </Table>
-                </FormGroup>
-
-                <FormGroup>
-                    <Table striped>
-                        <th>Translations</th>
-                        {translatedText.map(item => {
-                            return (
-                                <tr>{item}</tr>
-                            )
-                        })}
-                    </Table>
-                </FormGroup>
-            </Form>
-        </Col>
+        </>
 
     )
 }
