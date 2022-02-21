@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Label, FormGroup, Input, Button,Col } from "reactstrap";
+import { Form, Label, FormGroup, Input, Button, Col, Table } from "reactstrap";
 import axios from 'axios';
 import { credentials } from '../../config/config'
 import Select from "react-select";
@@ -16,18 +16,22 @@ export default function Home() {
     });
     const [translatedText, setTranslatedText] = React.useState([]);
     const [toTranslate, setToTranslate] = React.useState([]);
+    const [augmentedText, setAugmentedText] = React.useState([]);
 
     const languages = [
-        {label:"English",value:"en"},
-        {label:"French",value:"fr"},
-        {label:"Italian",value:"it"},
-
+        { label: "English", value: "en" },
+        { label: "French", value: "fr" },
+        { label: "Italian", value: "it" },
     ]
-    
+
+
+    useEffect(() => {
+        getAugmentedText();
+    }, [translatedText])
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(toTranslate, data)
+
         axios.post(endpoint, {
             targetLanguages: data.targetLanguages,
             sourceLanguage: data.sourceLanguage,
@@ -36,10 +40,6 @@ export default function Home() {
             setTranslatedText(res.data)
         })
     }
-
-    useEffect(() => {
-        console.log(data)
-    }, [translatedText,data])
 
     const setToTranslateData = (data) => {
         const lines = data.split("\n");
@@ -51,7 +51,7 @@ export default function Home() {
         setToTranslate(data);
     }
 
-    const handleTargetLanguages = (opts)=>{
+    const setTargetLanguages = (opts) => {
         const langs = [];
 
         if (opts != null) {
@@ -60,34 +60,67 @@ export default function Home() {
             })
 
         }
+        setData({ ...data, targetLanguages: langs })
+    }
 
-      setData({...data,targetLanguages:langs})
-    
+    const getAugmentedText = () => {
+        var lines = []
+        translatedText.forEach(line => {
+            lines.push({ text: line })
+        });
+
+        axios.post(endpoint, {
+            targetLanguages: data.sourceLanguage,
+            sourceLanguage: '',
+            data: lines
+        }).then((res) => {
+            setAugmentedText(res.data)
+        })
     }
 
     return (
-        <Col md="5">
-            <Form className="bg-dark p-4" onSubmit={handleSubmit}>
+        <Col md="10">
+            <Form className="bg-light p-4" onSubmit={handleSubmit}>
                 <FormGroup>
                     <Label for="translateText">Text to Translate</Label>
                     <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
                 </FormGroup>
                 <FormGroup>
                     <Label for="sourceLanguage">Source Language</Label>
-                    <Select name="sourceLanguage" id="sourceLanguage" placeholder="sourceLanguage" options={languages} oonChange={value=>setData({...data,sourceLanguage:value.target.value})}></Select>
+                    <Select name="sourceLanguage" id="sourceLanguage" placeholder="sourceLanguage" options={languages} oonChange={value => setData({ ...data, sourceLanguage: value.target.value })}></Select>
                 </FormGroup>
                 <FormGroup>
                     <Label for="targetLanguages">Target Languages</Label>
-                   
-                    <Select name="targetLanguages" id="targetLanguages" placeholder="targetLanguages" options={languages} onChange={(value) => handleTargetLanguages(value)} isMulti></Select>
-
+                    <Select name="targetLanguages" id="targetLanguages" placeholder="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
+                </FormGroup>
+                <FormGroup>
+                    <Button>Translate</Button>
                 </FormGroup>
 
-                <Button>Submit</Button>
             </Form>
 
-            <Form>
-                <Input type="textarea" name="translateText" id="translatedText" value={translatedText} />
+            <Form className="bg-light p-4">
+                <FormGroup>
+                    <Table striped>
+                        <th>Results</th>
+                        {augmentedText.map(item => {
+                            return (
+                                <tr>{item}</tr>
+                            )
+                        })}
+                    </Table>
+                </FormGroup>
+
+                <FormGroup>
+                    <Table striped>
+                        <th>Translations</th>
+                        {translatedText.map(item => {
+                            return (
+                                <tr>{item}</tr>
+                            )
+                        })}
+                    </Table>
+                </FormGroup>
             </Form>
         </Col>
 
