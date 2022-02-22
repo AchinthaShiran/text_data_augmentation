@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Label, FormGroup, Input, Button, Col, Table } from "reactstrap";
+import { Form, Label, FormGroup, Input, Button, Col, Table, Row } from "reactstrap";
 import axios from 'axios';
 import { credentials } from '../../config/config'
 import Select from "react-select";
@@ -12,7 +12,9 @@ var location = credentials.LOCATION;
 export default function Home() {
     const [data, setData] = React.useState({
         targetLanguages: ["fr", "it"],
-        sourceLanguage: "en"
+        sourceLanguage: "en",
+        key: "",
+        location: ""
     });
     const [translatedText, setTranslatedText] = React.useState([]);
     const [toTranslate, setToTranslate] = React.useState([]);
@@ -137,6 +139,8 @@ export default function Home() {
         axios.post(endpoint, {
             targetLanguages: data.targetLanguages,
             sourceLanguage: data.sourceLanguage,
+            key: data.key,
+            location: data.location,
             data: toTranslate
         }).then((res) => {
             setTranslatedText(res.data)
@@ -174,6 +178,8 @@ export default function Home() {
         axios.post(endpoint, {
             targetLanguages: data.sourceLanguage,
             sourceLanguage: '',
+            key: data.key,
+            location: data.location,
             data: lines
         }).then((res) => {
             setAugmentedText(res.data)
@@ -185,8 +191,8 @@ export default function Home() {
             return (
                 <Form className="bg-light p-4">
                     <FormGroup>
+                        <h5>Results</h5>
                         <Table hover>
-                            <th>Results</th>
                             <tbody>
                                 {augmentedText.map(item => {
                                     return (
@@ -196,10 +202,12 @@ export default function Home() {
                             </tbody>
                         </Table>
                     </FormGroup>
-
+<br />
+<br />
+<br />
                     <FormGroup>
+                        <h5>Translations</h5>
                         <Table hover>
-                            <th>Translations</th>
                             <tbody>
                                 {translatedText.map(item => {
                                     return (
@@ -216,22 +224,47 @@ export default function Home() {
 
     return (
         <>
-            <Col md="10">
+            <Col md="12">
                 <Form className="bg-light p-4" onSubmit={handleSubmit}>
-                    <FormGroup>
-                        <Label for="sourceLanguage">Source Language</Label>
-                        <Select name="sourceLanguage" id="sourceLanguage" options={languages} onChange={(value) => setData({ ...data, sourceLanguage: value.value })}></Select>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="targetLanguages">Target Languages</Label>
-                        <Select name="targetLanguages" id="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
-                    </FormGroup>
+                    <h3>Text Data Augmentation</h3>
+                    <Row>
+                        <Col md="6">
+                            <FormGroup>
+                                <Label for="key">Subscription Key</Label>
+                                <Input name="key" id="key" onChange={(value) => setData({ ...data, key: value.target.value })}></Input>
+                            </FormGroup>
+                        </Col>
+
+                        <Col md="6">
+                            <FormGroup>
+                                <Label for="location">Location</Label>
+                                <Input name="location" id="location" onChange={(value) => setData({ ...data, location: value.target.value })}></Input>
+                            </FormGroup>
+                        </Col>
+
+                    </Row>
+                    <Row>
+                        <Col md="6">
+                            <FormGroup>
+                                <Label for="sourceLanguage">Source Language</Label>
+                                <Select name="sourceLanguage" id="sourceLanguage" options={languages} onChange={(value) => setData({ ...data, sourceLanguage: value.value })}></Select>
+                            </FormGroup>
+                        </Col>
+
+                        <Col md="6">
+                            <FormGroup>
+                                <Label for="targetLanguages">Target Languages</Label>
+                                <Select name="targetLanguages" id="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
+                            </FormGroup>
+                        </Col>
+
+                    </Row>
                     <FormGroup>
                         <Label for="translateText">Text to Translate</Label>
                         <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
                     </FormGroup>
                     <FormGroup>
-                        <Button>Translate</Button>
+                        <Button>Submit</Button>
                     </FormGroup>
                 </Form>
 
