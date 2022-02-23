@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { Form, Label, FormGroup, Input, Button, Col, Table, Row } from "reactstrap";
 import axios from 'axios';
 import Select from "react-select";
+import Creatable from 'react-select/creatable';
 import DownloadAsTextFile from "../../Components/TextDownloadFunction";
-import background from "../../Assets/background.jpg"
 var endpoint = "https://azure-translation-api.herokuapp.com/api";
 
 export default function Home() {
@@ -125,6 +125,33 @@ export default function Home() {
         { label: "Yucatec Maya", value: "yua" },
     ]
 
+    const locations=[
+        {label:"Global", value:"Global"},
+        {label:"East US", value:"East US"},
+        {label:"East US 2", value:"East US 2"},
+        {label:"South Central US", value:"South Central US"},
+        {label:"West US 2", value:"West US 2"},
+        {label:"West US 3", value:"West US 3"},
+        {label:"Australia East", value:"Australia East"},
+        {label:"Southeast Asia", value:"Southeast Asia"},
+        {label:"North Europe", value:"North Europe"},
+        {label:"West Europe", value:"West Europe"},
+        {label:"Central US", value:"Central US"},
+        {label:"North Central US", value:"North Central U"},
+        {label:"Central India", value:"Central India"},
+        {label:"East Asia", value:"East Asia"},
+        {label:"Japan East", value:"Japan East"},
+        {label:"Korea Central", value:"Korea Central"},
+        {label:"Canada Central", value:"Canada Central"},
+        {label:"Germany West Central", value:"Germany West Central"},
+        {label:"Norway East", value:"Norway East"},
+        {label:"Switzerland", value:"Switzerland"},
+        {label:"Brazil South", value:"Brazil South"},
+        {label:"Switzerland West", value:"Switzerland West"},
+    ]
+    useEffect(() => {
+        document.title = "Text Augmentation Dashboard"
+    }, [])
 
     useEffect(() => {
         getAugmentedText();
@@ -252,7 +279,9 @@ export default function Home() {
                                 <Col md="6">
                                     <FormGroup>
                                         <Label for="location">Location</Label>
-                                        <Input required name="location" id="location" onChange={(value) => setData({ ...data, location: value.target.value })}></Input>
+                                        <Creatable name="location" id="location" placeholder="Global,East US,East US 2" options={locations} onChange={(value) => setData({ ...data, location: value.value })}></Creatable>
+                                      
+                                        {/* <Input required name="location" id="location" placeholder="Global,East US," onChange={(value) => setData({ ...data, location: value.value })}></Input> */}
                                     </FormGroup>
                                 </Col>
 
