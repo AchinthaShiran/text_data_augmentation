@@ -1,17 +1,14 @@
 import React, { useEffect } from "react";
-import { Form, Label, FormGroup, Input, Button, Col, Table, Row } from "reactstrap";
+import { Form, Label, FormGroup, Input, Button, Col, Table, Row, Alert } from "reactstrap";
 import axios from 'axios';
-//import { credentials } from '../../config/config'
 import Select from "react-select";
+import Creatable from 'react-select/creatable';
 import DownloadAsTextFile from "../../Components/TextDownloadFunction";
-//var subscriptionKey = credentials.KEY
-var endpoint = "http://localhost:3001/api";
-
-//var location = credentials.LOCATION;
+var endpoint = "https://azure-translation-api.herokuapp.com/api";
 
 export default function Home() {
     const [data, setData] = React.useState({
-        targetLanguages: ["fr", "it"],
+        targetLanguages: ["fr"],
         sourceLanguage: "en",
         key: "",
         location: ""
@@ -19,6 +16,8 @@ export default function Home() {
     const [translatedText, setTranslatedText] = React.useState([]);
     const [toTranslate, setToTranslate] = React.useState([]);
     const [augmentedText, setAugmentedText] = React.useState([]);
+
+    const [error, setError] = React.useState("");
 
     const languages = [
         { label: "Afrikaans", value: "af" },
@@ -128,10 +127,40 @@ export default function Home() {
         { label: "Yucatec Maya", value: "yua" },
     ]
 
+    const locations = [
+        { label: "Global", value: "Global" },
+        { label: "East US", value: "East US" },
+        { label: "East US 2", value: "East US 2" },
+        { label: "South Central US", value: "South Central US" },
+        { label: "West US 2", value: "West US 2" },
+        { label: "West US 3", value: "West US 3" },
+        { label: "Australia East", value: "Australia East" },
+        { label: "Southeast Asia", value: "Southeast Asia" },
+        { label: "North Europe", value: "North Europe" },
+        { label: "West Europe", value: "West Europe" },
+        { label: "Central US", value: "Central US" },
+        { label: "North Central US", value: "North Central U" },
+        { label: "Central India", value: "Central India" },
+        { label: "East Asia", value: "East Asia" },
+        { label: "Japan East", value: "Japan East" },
+        { label: "Korea Central", value: "Korea Central" },
+        { label: "Canada Central", value: "Canada Central" },
+        { label: "Germany West Central", value: "Germany West Central" },
+        { label: "Norway East", value: "Norway East" },
+        { label: "Switzerland", value: "Switzerland" },
+        { label: "Brazil South", value: "Brazil South" },
+        { label: "Switzerland West", value: "Switzerland West" },
+    ]
+    useEffect(() => {
+        document.title = "Text Augmentation Dashboard"
+    }, [])
 
     useEffect(() => {
-        getAugmentedText();
+        if (error == "")
+            getAugmentedText();
     }, [translatedText])
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -143,7 +172,11 @@ export default function Home() {
             location: data.location,
             data: toTranslate
         }).then((res) => {
+            setError("");
             setTranslatedText(res.data)
+        }).catch(err => {
+            const code = err.response.status;
+            setErrorMessage(code);
         })
     }
 
@@ -183,109 +216,138 @@ export default function Home() {
             data: lines
         }).then((res) => {
             setAugmentedText(res.data)
+        }).catch(err => {
+
         })
+    }
+
+    const setErrorMessage = (code) => {
+        if (code == "401") {
+            setError("Please check your credentials")
+        }
+        else if (code == "500") {
+            setError("Sorry, Server error :(")
+        }
+        else {
+            setError("Sorry we are having an error :(")
+        }
     }
 
     const displayResults = () => {
         if (translatedText != "" && augmentedText != "") {
             return (
                 <>
-                    <Form className="bg-light p-4">
-                        <FormGroup>
-                            <h5>Results</h5>
-                            <Table hover>
-                                <tbody>
-                                    {augmentedText.map(item => {
-                                        return (
-                                            <tr><td>{item}</td></tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
-                        </FormGroup>
-                        <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button onClick={() => DownloadAsTextFile(augmentedText,"results")}>Download as text</Button>
-                        </FormGroup>
-                    </Form>
-
+                    <div className="formBackground">
+                        <Form className="bg-transparent p-4">
+                            <FormGroup>
+                                <h5>Results</h5>
+                                <Table hover>
+                                    <tbody>
+                                        {augmentedText.map(item => {
+                                            return (
+                                                <tr><td>{item}</td></tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </FormGroup>
+                            <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button onClick={() => DownloadAsTextFile(augmentedText, "results")}>Download as text</Button>
+                            </FormGroup>
+                        </Form>
+                    </div>
                     <br />
                     <br />
                     <br />
-                    <Form className="bg-light p-4">
-
-                        <FormGroup>
-                            <h5>Translations</h5>
-                            <Table hover>
-                                <tbody>
-                                    {translatedText.map(item => {
-                                        return (
-                                            <tr><td>{item}</td></tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
-                        </FormGroup>
-                        <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button onClick={() => DownloadAsTextFile(translatedText,"translatedText")}>Download as text</Button>
-                        </FormGroup>
-                    </Form>
+                    <div className="formBackground">
+                        <Form className="bg-transparent p-4">
+                            <FormGroup>
+                                <h5>Translations</h5>
+                                <Table hover>
+                                    <tbody>
+                                        {translatedText.map(item => {
+                                            return (
+                                                <tr><td>{item}</td></tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </FormGroup>
+                            <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button onClick={() => DownloadAsTextFile(translatedText, "translatedText")}>Download as text</Button>
+                            </FormGroup>
+                        </Form>
+                    </div>
                 </>
             )
         }
     }
 
     return (
-        <div className="container">
-            <Col md="12" className="form">
-                <Form className="bg-light p-4" onSubmit={handleSubmit}>
-                    <h3 style={{ display: 'flex', justifyContent: 'center' }}>Text Data Augmentation</h3>
+        <div className="background">
+            <div className="container">
+                <Col md="12" className="form">
+                    <div className="formBackground">
+                        <Form className="bg-transparent p-4" onSubmit={handleSubmit}>
+                            <h3 style={{ display: 'flex', justifyContent: 'center' }}>Text Data Augmentation</h3>
+                            <br />
+                            <Row>
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="key">Azure Translate API Subscription Key</Label>
+                                        <Input required name="key" id="key" onChange={(value) => setData({ ...data, key: value.target.value })}></Input>
+                                    </FormGroup>
+                                </Col>
+
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="location">Location</Label>
+                                        <Creatable name="location" id="location" placeholder="Global,East US,East US 2" options={locations} onChange={(value) => setData({ ...data, location: value.value })}></Creatable>
+
+                                        {/* <Input required name="location" id="location" placeholder="Global,East US," onChange={(value) => setData({ ...data, location: value.value })}></Input> */}
+                                    </FormGroup>
+                                </Col>
+
+                            </Row>
+                            <Row>
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="sourceLanguage">Source Language</Label>
+                                        <Select name="sourceLanguage" id="sourceLanguage" options={languages} onChange={(value) => setData({ ...data, sourceLanguage: value.value })}></Select>
+                                    </FormGroup>
+                                </Col>
+
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="targetLanguages">Target Languages</Label>
+                                        <Select name="targetLanguages" id="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
+                                    </FormGroup>
+                                </Col>
+
+                            </Row>
+                            <FormGroup>
+                                <Label for="translateText">Text</Label>
+                                <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
+                            </FormGroup>
+                            <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button>Submit</Button>
+                            </FormGroup>
+
+                            <Row>
+                                {error != "" && <FormGroup>
+                                    <Alert color="danger">
+                                        {error}
+                                    </Alert>
+                                </FormGroup>}
+                            </Row>
+                        </Form>
+                    </div>
                     <br />
-                    <Row>
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="key">Azure Translate API Subscription Key</Label>
-                                <Input name="key" id="key" onChange={(value) => setData({ ...data, key: value.target.value })}></Input>
-                            </FormGroup>
-                        </Col>
+                    <br />
+                    {displayResults()}
+                </Col>
 
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="location">Location</Label>
-                                <Input name="location" id="location" onChange={(value) => setData({ ...data, location: value.target.value })}></Input>
-                            </FormGroup>
-                        </Col>
-
-                    </Row>
-                    <Row>
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="sourceLanguage">Source Language</Label>
-                                <Select name="sourceLanguage" id="sourceLanguage" options={languages} onChange={(value) => setData({ ...data, sourceLanguage: value.value })}></Select>
-                            </FormGroup>
-                        </Col>
-
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="targetLanguages">Target Languages</Label>
-                                <Select name="targetLanguages" id="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
-                            </FormGroup>
-                        </Col>
-
-                    </Row>
-                    <FormGroup>
-                        <Label for="translateText">Text to Translate</Label>
-                        <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
-                    </FormGroup>
-                    <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button>Submit</Button>
-                    </FormGroup>
-                </Form>
-
-                <br />
-                <br />
-                {displayResults()}
-            </Col>
-
+            </div>
         </div>
 
     )
