@@ -1,5 +1,7 @@
 # Text Data Augmentation
-This dashboard could be used for text data augmentation by translating the text to different languages and translating them back to the required language.
+This dashboard could be used for text data augmentation using back translation method.
+
+Developed using ReactJs 
 
 [Azure Translator Text API](https://azure.microsoft.com/en-us/services/cognitive-services/translator/#overview) is used for translation.
 
