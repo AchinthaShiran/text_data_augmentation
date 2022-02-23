@@ -1,17 +1,14 @@
 import React, { useEffect } from "react";
 import { Form, Label, FormGroup, Input, Button, Col, Table, Row } from "reactstrap";
 import axios from 'axios';
-//import { credentials } from '../../config/config'
 import Select from "react-select";
 import DownloadAsTextFile from "../../Components/TextDownloadFunction";
-//var subscriptionKey = credentials.KEY
+import background from "../../Assets/background.jpg"
 var endpoint = "https://azure-translation-api.herokuapp.com/api";
-
-//var location = credentials.LOCATION;
 
 export default function Home() {
     const [data, setData] = React.useState({
-        targetLanguages: ["fr", "it"],
+        targetLanguages: ["fr"],
         sourceLanguage: "en",
         key: "",
         location: ""
@@ -190,102 +187,107 @@ export default function Home() {
         if (translatedText != "" && augmentedText != "") {
             return (
                 <>
-                    <Form className="bg-light p-4">
-                        <FormGroup>
-                            <h5>Results</h5>
-                            <Table hover>
-                                <tbody>
-                                    {augmentedText.map(item => {
-                                        return (
-                                            <tr><td>{item}</td></tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
-                        </FormGroup>
-                        <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button onClick={() => DownloadAsTextFile(augmentedText,"results")}>Download as text</Button>
-                        </FormGroup>
-                    </Form>
-
+                    <div className="formBackground">
+                        <Form className="bg-transparent p-4">
+                            <FormGroup>
+                                <h5>Results</h5>
+                                <Table hover>
+                                    <tbody>
+                                        {augmentedText.map(item => {
+                                            return (
+                                                <tr><td>{item}</td></tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </FormGroup>
+                            <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button onClick={() => DownloadAsTextFile(augmentedText, "results")}>Download as text</Button>
+                            </FormGroup>
+                        </Form>
+                    </div>
                     <br />
                     <br />
                     <br />
-                    <Form className="bg-light p-4">
-
-                        <FormGroup>
-                            <h5>Translations</h5>
-                            <Table hover>
-                                <tbody>
-                                    {translatedText.map(item => {
-                                        return (
-                                            <tr><td>{item}</td></tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </Table>
-                        </FormGroup>
-                        <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button onClick={() => DownloadAsTextFile(translatedText,"translatedText")}>Download as text</Button>
-                        </FormGroup>
-                    </Form>
+                    <div className="formBackground">
+                        <Form className="bg-transparent p-4">
+                            <FormGroup>
+                                <h5>Translations</h5>
+                                <Table hover>
+                                    <tbody>
+                                        {translatedText.map(item => {
+                                            return (
+                                                <tr><td>{item}</td></tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </FormGroup>
+                            <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button onClick={() => DownloadAsTextFile(translatedText, "translatedText")}>Download as text</Button>
+                            </FormGroup>
+                        </Form>
+                    </div>
                 </>
             )
         }
     }
 
     return (
-        <div className="container">
-            <Col md="12" className="form">
-                <Form className="bg-light p-4" onSubmit={handleSubmit}>
-                    <h3 style={{ display: 'flex', justifyContent: 'center' }}>Text Data Augmentation</h3>
+        <div className="background">
+            <div className="container">
+                <Col md="12" className="form">
+                    <div className="formBackground">
+                        <Form className="bg-transparent p-4" onSubmit={handleSubmit}>
+                            <h3 style={{ display: 'flex', justifyContent: 'center' }}>Text Data Augmentation</h3>
+                            <br />
+                            <Row>
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="key">Azure Translate API Subscription Key</Label>
+                                        <Input required name="key" id="key" onChange={(value) => setData({ ...data, key: value.target.value })}></Input>
+                                    </FormGroup>
+                                </Col>
+
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="location">Location</Label>
+                                        <Input required name="location" id="location" onChange={(value) => setData({ ...data, location: value.target.value })}></Input>
+                                    </FormGroup>
+                                </Col>
+
+                            </Row>
+                            <Row>
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="sourceLanguage">Source Language</Label>
+                                        <Select name="sourceLanguage" id="sourceLanguage" options={languages} onChange={(value) => setData({ ...data, sourceLanguage: value.value })}></Select>
+                                    </FormGroup>
+                                </Col>
+
+                                <Col md="6">
+                                    <FormGroup>
+                                        <Label for="targetLanguages">Target Languages</Label>
+                                        <Select name="targetLanguages" id="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
+                                    </FormGroup>
+                                </Col>
+
+                            </Row>
+                            <FormGroup>
+                                <Label for="translateText">Text to Translate</Label>
+                                <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
+                            </FormGroup>
+                            <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button>Submit</Button>
+                            </FormGroup>
+                        </Form>
+                    </div>
                     <br />
-                    <Row>
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="key">Azure Translate API Subscription Key</Label>
-                                <Input name="key" id="key" onChange={(value) => setData({ ...data, key: value.target.value })}></Input>
-                            </FormGroup>
-                        </Col>
+                    <br />
+                    {displayResults()}
+                </Col>
 
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="location">Location</Label>
-                                <Input name="location" id="location" onChange={(value) => setData({ ...data, location: value.target.value })}></Input>
-                            </FormGroup>
-                        </Col>
-
-                    </Row>
-                    <Row>
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="sourceLanguage">Source Language</Label>
-                                <Select name="sourceLanguage" id="sourceLanguage" options={languages} onChange={(value) => setData({ ...data, sourceLanguage: value.value })}></Select>
-                            </FormGroup>
-                        </Col>
-
-                        <Col md="6">
-                            <FormGroup>
-                                <Label for="targetLanguages">Target Languages</Label>
-                                <Select name="targetLanguages" id="targetLanguages" options={languages} onChange={(value) => setTargetLanguages(value)} isMulti></Select>
-                            </FormGroup>
-                        </Col>
-
-                    </Row>
-                    <FormGroup>
-                        <Label for="translateText">Text to Translate</Label>
-                        <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
-                    </FormGroup>
-                    <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button>Submit</Button>
-                    </FormGroup>
-                </Form>
-
-                <br />
-                <br />
-                {displayResults()}
-            </Col>
-
+            </div>
         </div>
 
     )
