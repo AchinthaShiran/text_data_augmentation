@@ -5,7 +5,7 @@ import axios from 'axios';
 import Select from "react-select";
 import DownloadAsTextFile from "../../Components/TextDownloadFunction";
 //var subscriptionKey = credentials.KEY
-var endpoint = "http://localhost:3001/api";
+var endpoint = "https://azure-translation-api.herokuapp.com/api";
 
 //var location = credentials.LOCATION;
 
