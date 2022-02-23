@@ -3,7 +3,7 @@ import { Form, Label, FormGroup, Input, Button, Col, Table, Row } from "reactstr
 import axios from 'axios';
 //import { credentials } from '../../config/config'
 import Select from "react-select";
-
+import DownloadAsTextFile from "../../Components/TextDownloadFunction";
 //var subscriptionKey = credentials.KEY
 var endpoint = "http://localhost:3001/api";
 
@@ -187,7 +187,7 @@ export default function Home() {
     }
 
     const displayResults = () => {
-        if (translatedText !== "" && augmentedText !== "") {
+        if (translatedText != "" && augmentedText != "") {
             return (
                 <>
                     <Form className="bg-light p-4">
@@ -202,6 +202,9 @@ export default function Home() {
                                     })}
                                 </tbody>
                             </Table>
+                        </FormGroup>
+                        <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                            <Button onClick={() => DownloadAsTextFile(augmentedText,"results")}>Download as text</Button>
                         </FormGroup>
                     </Form>
 
@@ -222,6 +225,9 @@ export default function Home() {
                                 </tbody>
                             </Table>
                         </FormGroup>
+                        <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
+                            <Button onClick={() => DownloadAsTextFile(translatedText,"translatedText")}>Download as text</Button>
+                        </FormGroup>
                     </Form>
                 </>
             )
@@ -233,7 +239,7 @@ export default function Home() {
             <Col md="12" className="form">
                 <Form className="bg-light p-4" onSubmit={handleSubmit}>
                     <h3 style={{ display: 'flex', justifyContent: 'center' }}>Text Data Augmentation</h3>
-                    <br/>
+                    <br />
                     <Row>
                         <Col md="6">
                             <FormGroup>
