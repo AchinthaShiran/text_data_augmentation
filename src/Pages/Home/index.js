@@ -8,8 +8,8 @@ var endpoint = "https://azure-translation-api.herokuapp.com/api";
 
 export default function Home() {
     const [data, setData] = React.useState({
-        targetLanguages: ["fr"],
-        sourceLanguage: "en",
+        targetLanguages: [],
+        sourceLanguage: "",
         key: "",
         location: ""
     });
@@ -223,13 +223,16 @@ export default function Home() {
 
     const setErrorMessage = (code) => {
         if (code == "401") {
-            setError("Please check your credentials")
+            setError("Please check your credentials ╰（‵□′）╯")
         }
         else if (code == "500") {
-            setError("Sorry, Server error :(")
+            setError("Sorry, Server error ＞﹏＜")
+        }
+        else if (code == "400") {
+            setError("Please check input!! (´･ω･`)?")
         }
         else {
-            setError("Sorry we are having an error :(")
+            setError("Error ＞︿＜")
         }
     }
 
