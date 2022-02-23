@@ -8,8 +8,8 @@ var endpoint = "https://azure-translation-api.herokuapp.com/api";
 
 export default function Home() {
     const [data, setData] = React.useState({
-        targetLanguages: ["fr"],
-        sourceLanguage: "en",
+        targetLanguages: [],
+        sourceLanguage: "",
         key: "",
         location: ""
     });
