@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Form, Label, FormGroup, Input, Button, Col, Table, Row } from "reactstrap";
 import axios from 'axios';
-import { credentials } from '../../config/config'
+//import { credentials } from '../../config/config'
 import Select from "react-select";
 
-var subscriptionKey = credentials.KEY
+//var subscriptionKey = credentials.KEY
 var endpoint = "http://localhost:3001/api";
 
-var location = credentials.LOCATION;
+//var location = credentials.LOCATION;
 
 export default function Home() {
     const [data, setData] = React.useState({
@@ -147,14 +147,14 @@ export default function Home() {
         })
     }
 
-    const setToTranslateData = (data) => {
-        const lines = data.split("\n");
-        var data = []
+    const setToTranslateData = (text) => {
+        const lines = text.split("\n");
+        var text = []
 
         lines.forEach(line => {
-            data.push({ text: line })
+            text.push({ text: line })
         });
-        setToTranslate(data);
+        setToTranslate(text);
     }
 
     const setTargetLanguages = (opts) => {
@@ -187,50 +187,57 @@ export default function Home() {
     }
 
     const displayResults = () => {
-        if (translatedText != "" && augmentedText != "") {
+        if (translatedText !== "" && augmentedText !== "") {
             return (
-                <Form className="bg-light p-4">
-                    <FormGroup>
-                        <h5>Results</h5>
-                        <Table hover>
-                            <tbody>
-                                {augmentedText.map(item => {
-                                    return (
-                                        <tr><td>{item}</td></tr>
-                                    )
-                                })}
-                            </tbody>
-                        </Table>
-                    </FormGroup>
-<br />
-<br />
-<br />
-                    <FormGroup>
-                        <h5>Translations</h5>
-                        <Table hover>
-                            <tbody>
-                                {translatedText.map(item => {
-                                    return (
-                                        <tr><td>{item}</td></tr>
-                                    )
-                                })}
-                            </tbody>
-                        </Table>
-                    </FormGroup>
-                </Form>
+                <>
+                    <Form className="bg-light p-4">
+                        <FormGroup>
+                            <h5>Results</h5>
+                            <Table hover>
+                                <tbody>
+                                    {augmentedText.map(item => {
+                                        return (
+                                            <tr><td>{item}</td></tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </Table>
+                        </FormGroup>
+                    </Form>
+
+                    <br />
+                    <br />
+                    <br />
+                    <Form className="bg-light p-4">
+
+                        <FormGroup>
+                            <h5>Translations</h5>
+                            <Table hover>
+                                <tbody>
+                                    {translatedText.map(item => {
+                                        return (
+                                            <tr><td>{item}</td></tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </Table>
+                        </FormGroup>
+                    </Form>
+                </>
             )
         }
     }
 
     return (
-        <>
-            <Col md="12">
+        <div className="container">
+            <Col md="12" className="form">
                 <Form className="bg-light p-4" onSubmit={handleSubmit}>
-                    <h3>Text Data Augmentation</h3>
+                    <h3 style={{ display: 'flex', justifyContent: 'center' }}>Text Data Augmentation</h3>
+                    <br/>
                     <Row>
                         <Col md="6">
                             <FormGroup>
-                                <Label for="key">Subscription Key</Label>
+                                <Label for="key">Azure Translate API Subscription Key</Label>
                                 <Input name="key" id="key" onChange={(value) => setData({ ...data, key: value.target.value })}></Input>
                             </FormGroup>
                         </Col>
@@ -263,15 +270,17 @@ export default function Home() {
                         <Label for="translateText">Text to Translate</Label>
                         <Input type="textarea" name="translateText" id="translateText" onChange={(text) => setToTranslateData(text.target.value)} />
                     </FormGroup>
-                    <FormGroup>
+                    <FormGroup style={{ display: 'flex', justifyContent: 'center' }}>
                         <Button>Submit</Button>
                     </FormGroup>
                 </Form>
 
+                <br />
+                <br />
                 {displayResults()}
             </Col>
 
-        </>
+        </div>
 
     )
 }
