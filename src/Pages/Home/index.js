@@ -215,7 +215,8 @@ export default function Home() {
             location: data.location,
             data: lines
         }).then((res) => {
-            setAugmentedText(res.data)
+            const uniqueTexts = Array.from(new Set(res.data));
+            setAugmentedText(uniqueTexts)
         }).catch(err => {
 
         })
